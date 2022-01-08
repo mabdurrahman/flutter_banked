@@ -1,5 +1,16 @@
+def githubPropertiesFile = rootProject.file(".github.properties")
+if (githubPropertiesFile.exists()) {
+    def githubProperties = new Properties()
+    githubProperties.load(new FileInputStream(githubPropertiesFile))
+    ext.githubGprUser = githubProperties['gpr.usr']
+    ext.githubGprKey = githubProperties['gpr.key']
+} else {
+    ext.githubGprUser = System.getenv("GITHUB_GPR_USER")
+    ext.githubGprKey = System.getenv("GITHUB_GPR_KEY")
+}
+
 buildscript {
-    ext.kotlin_version = '1.3.50'
+    ext.kotlin_version = '1.6.0'
     repositories {
         google()
         mavenCentral()
@@ -15,6 +26,15 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+        maven { url 'https://www.jitpack.io' }
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/banked/banked-android-sdk")
+            credentials {
+                username = rootProject.ext.githubGprUser
+                password = rootProject.ext.githubGprKey
+            }
+        }
     }
 }
 
